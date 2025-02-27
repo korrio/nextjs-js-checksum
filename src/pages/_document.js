@@ -21,6 +21,10 @@ import path from 'path';
 class CustomNextScript extends NextScript {
     getScripts() {
         const scripts = super.getScripts();
+        // More visible server-side logging
+        console.log('=====================================');
+        console.log('NEXTJS SCRIPTS:', JSON.stringify(scripts, null, 2));
+        console.log('=====================================');
 
         // Try to load the integrity map
         let integrityMap = {};
@@ -62,6 +66,7 @@ class CustomNextScript extends NextScript {
 }
 
 class MyDocument extends Document {
+
     render() {
         return (
             <Html>
