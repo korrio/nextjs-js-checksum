@@ -1,40 +1,50 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+## Next.js project implementing script integrity checksums:
 
-## Getting Started
+Here's a detailed explanation of the key files in this project structure:
 
-First, run the development server:
+### Core Files
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+1. **`pages/_document.js`**
+   - Extends Next.js's default document
+   - Implements the custom `NextScript` component
+   - Adds integrity attributes to script tags
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. **`scripts/generate-nextjs-integrity.js`**
+   - Post-build script to scan compiled JS files
+   - Generates SHA-512 integrity hashes
+   - Creates a mapping between file paths and hashes
+   - Saves this mapping to `public/nextjs-integrity.json`
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+3. **`public/nextjs-integrity.json`** (generated)
+   - Contains mappings of script paths to integrity hashes
+   - Example: `"/_next/static/chunks/pages/_app-4f0dcee809cce622.js": "sha512-..."` 
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+4. **`middleware.js`** (optional alternative approach)
+   - Intercepts responses
+   - Adds Content-Security-Policy headers with integrity requirements
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+5. **`package.json`**
+   - Contains build script that runs the integrity generator
+   - `"build": "next build && node scripts/generate-nextjs-integrity.js"`
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Generated Files
 
-## Learn More
+1. **`.next/`**
+   - Generated during the build process
+   - Contains compiled and optimized JS files with hash suffixes
+   - These are the files for which we generate integrity checksums
 
-To learn more about Next.js, take a look at the following resources:
+### Implementation Flow
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
+1. Run `npm run build` which:
+   - Executes Next.js build process
+   - Creates the compiled JS files in `.next/`
+   - Runs the `generate-nextjs-integrity.js` script
+   - Generates the `public/nextjs-integrity.json` file
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+2. When serving the application:
+   - The custom `_document.js` loads the integrity map
+   - It adds integrity attributes to script tags
+   - Alternatively, the middleware adds CSP headers
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+This structure supports adding integrity checksums to Next.js's hashed JS files while maintaining compatibility with its build process and optimization features.

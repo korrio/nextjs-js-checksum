@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build",
+    "dev": "next dev",
+    "build": "next build && node scripts/generate-nextjs-integrity.js",
     "start": "next start",
-    "lint": "next lint"
+    "generate-integrity": "node scripts/generate-nextjs-integrity.js"
   },
   "dependencies": {
     "react": "^19.0.0",
@@ -15,6 +15,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4"
+    "tailwindcss": "^4",
+    "glob": "^8.0.3"
   }
 }
